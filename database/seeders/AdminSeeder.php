@@ -25,8 +25,7 @@ class AdminSeeder extends Seeder
             'status' => true,
             'phone_number' => '12345678',
             'address' => '123 Main St',
-            'api_token' => Str::random(80), // Generate API token for admin
-            'token_expires_at' => null, // No expiration for admin token
+            
         ]);
     }
 }

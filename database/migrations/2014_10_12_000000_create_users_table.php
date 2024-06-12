@@ -24,8 +24,6 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('confirmation_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('api_token', 80)->nullable()->unique(); // Token for API authentication
-            $table->timestamp('token_expires_at')->nullable(); // Token expiration time
             $table->rememberToken();
             $table->timestamps();
         });

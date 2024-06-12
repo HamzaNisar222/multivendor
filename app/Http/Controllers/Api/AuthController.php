@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\ApiToken;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Jobs\SendConfirmationEmail;
@@ -55,18 +56,30 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        // Generate and store API token
-        $user->api_token = Str::random(80);
-        $user->token_expires_at = now()->addHour(); // Set expiration time to 1 hour from now
-        $user->save();
+        $ipAddress = $request->ip();
+        $apiToken = ApiToken::createTokenForUser($user, $ipAddress);
 
-
-
-
-
-        return response()->json(['token' => $user->api_token]);
+        return response()->json(['token' => $apiToken->token]);
     }
 
+    public function logout(Request $request)
+    {
+        $user = $request->user;
+        $token = $request->header('Authorization');
+
+        $token = substr($token, 7);
+        $apiToken = ApiToken::where('token', $token)->first();
+
+        if ($apiToken) {
+            // Token exists, delete it
+            $apiToken->delete();
+        } else {
+            // Token doesn't exist, prompt the user to login first
+            return response()->json(['error' => 'Please login first'], 401);
+        }
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 
 
 }

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\User;
+use App\Models\ApiToken;
 use Illuminate\Http\Request;
 
 class AuthCheckMiddleware
@@ -18,27 +19,25 @@ class AuthCheckMiddleware
     public function handle(Request $request, Closure $next)
     {
         $authorizationHeader = $request->header('Authorization');
-
+        // dd($authorizationHeader);
         if (!$authorizationHeader) {
             return response()->json(['error' => 'Unauthorized token'], 401);
         }
+        // Remove "Bearer " prefix
+        $token = substr($authorizationHeader, 7);
 
-        $token = substr($authorizationHeader, 7); // Remove "Bearer " prefix
+        $apiToken = ApiToken::where('token', $token)
+                            ->where('expires_at', '>', now())
+                            ->first();
 
-        $user = User::where('api_token', $token)
-                    ->where('token_expires_at', '>', now())
-                    ->first();
-
-
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized user not'], 401);
-        }else{
-            echo "token is ok";
+        if (!$apiToken) {
+            return response()->json(['error' => 'Unauthorized user'], 401);
         }
 
         // Attach authenticated user to the request
-        $request->merge(['user' => $user]);
+        $request->merge(['user' => $apiToken->user]);
 
         return $next($request);
+
     }
 }

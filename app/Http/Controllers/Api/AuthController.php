@@ -5,24 +5,19 @@ namespace App\Http\Controllers\Api;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\ApiToken;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Jobs\SendConfirmationEmail;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-
-
         // Create user record
         $user = User::createUser($request->all());
+
         // Generate signed URL for email confirmation
         $confirmationUrl = URL::temporarySignedRoute('register.confirm', Carbon::now()->addMinutes(1), ['token' => $user->confirmation_token]);
         dispatch(new SendConfirmationEmail($user, $confirmationUrl));
@@ -39,6 +34,7 @@ class AuthController extends Controller
         }
         // Find the user by confirmation token
         $user = User::where('confirmation_token', $token)->first();
+
         // Activate the user
         $user->status = 1; // Active
         $user->confirmation_token = null;
@@ -62,12 +58,12 @@ class AuthController extends Controller
         $expiresIn = $request->has('remember') ? 24 * 7 : 1;
         $apiToken = ApiToken::createTokenForUser($user, $ipAddress,$expiresIn);
 
-        return response()->json(['token' => $apiToken->token]);
+        return response()->json(['token' => $apiToken->token,$user]);
     }
 
     public function logout(Request $request)
     {
-        $user = $request->user;
+
         $token = $request->header('Authorization');
 
         $token = substr($token, 7);

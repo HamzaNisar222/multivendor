@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\api;
 
 use App\Models\Service;
@@ -12,26 +11,26 @@ use App\Http\Requests\ServiceRequestUpdate;
 
 class ServiceController extends Controller
 {
-   /**
- * Display a listing of the resource.
- *
- * @return \Illuminate\Http\Response
- */
-public function index()
-{
-    $services = Service::all();
-    return new ServiceCollection($services);
-}
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $services = Service::all();
+        return new ServiceCollection($services);
+    }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\ServiceRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(ServiceRequest $request)
     {
-        $service = Service::create($request->all());
+        $service = Service::create($request->validated());
         return new ServiceResource($service);
     }
 
@@ -43,13 +42,17 @@ public function index()
      */
     public function show($id)
     {
-        //
+        $service = Service::find($id);
+        if (!$service) {
+            return response()->json(['message' => 'Service not found'], 404);
+        }
+        return new ServiceResource($service);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\ServiceRequestUpdate  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -60,8 +63,7 @@ public function index()
             return response()->json(['message' => 'Service not found'], 404);
         }
 
-        $service->update($request->all());
-
+        $service->update($request->validated());
         return new ServiceResource($service);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ApiToken;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -33,8 +34,8 @@ class RemoveExpiredTokens implements ShouldQueue
     public function handle()
     {
         try {
-            User::where("name", "Admin")->delete();
-            Log::info('RemoveExpiredTokens job executed successfully.');
+            ApiToken::where('expires_at', '<', now())->delete();
+            echo 'expired token deleted';
         } catch (\Exception $e) {
             Log::error('RemoveExpiredTokens job failed: ' . $e->getMessage());
             // Handle or rethrow the exception if necessary

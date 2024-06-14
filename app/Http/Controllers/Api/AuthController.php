@@ -51,7 +51,7 @@ class AuthController extends Controller
         $user = User::authenticate($request->email, $request->password);
 
         if (!$user) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return Response::error('Invalid credentials', 401);
         }
 
         $ipAddress = $request->ip();

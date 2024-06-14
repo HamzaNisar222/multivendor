@@ -38,5 +38,12 @@ class CustomResponseServiceProvider extends ServiceProvider
                 'message' => $message
             ], $statusCode);
         });
+
+        Response::macro('apiResponse', function ($apiToken, $user) {
+            return response()->json([
+                'token' => $apiToken->token,
+                'user' => $user
+            ]);
+        });
     }
 }

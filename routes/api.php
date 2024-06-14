@@ -50,17 +50,24 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
     // Reject a service registration
     Route::post('/service-registrations/reject/{id}', [ServiceRegistrationController::class, 'reject']);
 
-     // Routes for service registrations
-     Route::get('/service-registrations/pending', [AdminServiceController::class, 'pending']);
-     Route::get('/service-registrations/approved', [AdminServiceController::class, 'approved']);
-     Route::get('/service-registrations/rejected', [AdminServiceController::class, 'rejected']);
+    // Routes for service registrations
+    Route::get('/service-registrations/pending', [AdminServiceController::class, 'pending']);
+    Route::get('/service-registrations/approved', [AdminServiceController::class, 'approved']);
+    Route::get('/service-registrations/rejected', [AdminServiceController::class, 'rejected']);
 
     // Routes for service registrations of a specific user
-    Route::get('/users/{userId}/service-registrations/pending', [AdminServiceController::class, 'userPending']);
-    Route::get('/users/{userId}/service-registrations/approved', [AdminServiceController::class, 'userApproved']);
+    Route::get('/users/approved-requests/{Id}', [AdminServiceController::class, 'userApproved']);
+    Route::get('/users/pending-requests/{Id}', [AdminServiceController::class, 'userPending']);
 });
 
 // Vendor routes (requires 'user' role)
 Route::middleware(['auth.token', 'role:user'])->group(function () {
+
     Route::post('/service-registrations', [ServiceRegistrationController::class, 'create']);
 });
+
+// subadmins with permissions
+// add vendors options on admin side
+// logs detail complete activity of admins.
+// also mentains vendor activity logs
+

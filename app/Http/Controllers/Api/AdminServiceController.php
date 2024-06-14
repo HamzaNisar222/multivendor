@@ -51,7 +51,7 @@ class AdminServiceController extends Controller
      */
     public function userPending($userId)
     {
-        $registrations = VendorServiceRegistration::where('user_id', $userId)
+        $registrations = VendorServiceRegistration::where('vendor_id', $userId)
             ->where('status', 'pending')
             ->get();
 
@@ -64,12 +64,12 @@ class AdminServiceController extends Controller
      * @param int $userId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function userApproved($userId)
+    public function userApproved($Id)
     {
-        $registrations = VendorServiceRegistration::where('user_id', $userId)
+        // dd($Id);
+        $registrations = VendorServiceRegistration::where('vendor_id', $Id)
             ->where('status', 'approved')
             ->get();
-
         return response()->json(['registrations' => $registrations], 200);
     }
 }
